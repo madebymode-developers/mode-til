@@ -104,22 +104,22 @@ Feature: Developer creates post
     And I click create post
     Then I see a form for posts
     When I enter 0 words into that form
-    Then I see a message saying I have 200 words left
+    Then I see a message saying I have 400 words left
     And the message is not red
     When I enter 1 word and a newline into that form
     Then I see a message saying I have entered 1 word
-    And I see a message saying I have 199 words left
+    And I see a message saying I have 399 words left
     When I enter 1 word into that form
     Then I see a message saying I have entered 1 word
-    And I see a message saying I have 199 words left
+    And I see a message saying I have 399 words left
     When I enter 50 words into that form
     Then I see a message saying I have entered 50 words
-    And I see a message saying I have 150 words left
+    And I see a message saying I have 350 words left
     When I enter 200 words into that form
-    Then I see a message saying I have entered 200 words
+    Then I see a message saying I have entered 400 words
     And I see a message saying I have 0 words left
-    When I enter 300 words into that form
-    Then I see a message saying I have entered 300 words
+    When I enter 500 words into that form
+    Then I see a message saying I have entered 500 words
     And I see a message saying I have -100 words left
     And the message is red
 

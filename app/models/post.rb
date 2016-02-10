@@ -22,7 +22,7 @@ class Post < ActiveRecord::Base
   scope :published_and_untweeted, -> { published.where('tweeted is false') }
 
   MAX_TITLE_CHARS = 50
-  MAX_WORDS = 200
+  MAX_WORDS = 400
 
   def published?
     published_at?
@@ -99,7 +99,7 @@ class Post < ActiveRecord::Base
     words_remaining_abs = words_remaining.abs
     errors.add :body, "of this post is too long. It is "\
       "#{words_remaining_abs} #{'word'.pluralize(words_remaining_abs)} "\
-      "over the limit of 200 words"
+      "over the limit of 400 words"
   end
 
   def generate_slug
