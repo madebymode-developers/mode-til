@@ -11,11 +11,11 @@
     = favicon_link_tag 'favicon.png'
     = yield :head
     %meta(name="twitter:card" content="summary_large_image")
-    %meta(name="twitter:site" content="@hashrockettil")
-    %meta(name="twitter:creator" content="@hashrockettil")
-    %meta(name="twitter:title" content="Today I Learned: a Hashrocket Project")
-    %meta(name="twitter:description" content="TIL is a project by Hashrocket to catalogue the sharing & accumulation of knowledge as it happens day-to-day. Posts have a 200-word limit and any Hashrocket team member can contribute. We hope you enjoy learning along with us.")
-    %meta(name="twitter:image" content="//til.hashrocket.com/assets/til_twittercard.png")
+    %meta(name="twitter:site" content="@madebymodetil")
+    %meta(name="twitter:creator" content="@madebymodetil")
+    %meta(name="twitter:title" content="Today I Learned: a Hashrocket/MadeByMode Project")
+    %meta(name="twitter:description" content="TIL is a project by MadeByMode/Hashrocket to catalogue the sharing & accumulation of knowledge as it happens day-to-day. Posts have a 200-word limit and any MODE team member can contribute. We hope you enjoy learning along with us.")
+    %meta(name="twitter:image" content="//til.madebymode.com/assets/til_twittercard.png")
   %body
     %header.site_head
       %h1= link_to SITE_NAME, root_path
@@ -37,9 +37,9 @@
       = link_to "?", "#", class: "aside_toggle"
       .copy
         :markdown
-          TIL is a project by [Hashrocket](https://hashrocket.com) to catalogue the sharing & accumulation of knowledge as it happens day-to-day. Posts have a 200-word limit and any Hashrocket team member can contribute. We hope you enjoy learning along with us.
+          TIL is a project by [madebymode](https://madebymode.com) to catalogue the sharing & accumulation of knowledge as it happens day-to-day. Posts have a 200-word limit and any MODE team member can contribute. We hope you enjoy learning along with us.
 
-          Also: follow [@hashrockettil](https://twitter.com/hashrockettil) to inject your Twitter feed with knowledge.
+          Also: follow [@madebymodetil](https://twitter.com/madebymodetil) to inject your Twitter feed with knowledge.
 
     %aside.site_statistics
       = link_to "statistics", statistics_path, class: "aside_toggle"
@@ -54,12 +54,12 @@
     %footer.site_footer
       %p
         You can follow us on Twitter.
-        = link_to "@hashrockettil", "https://twitter.com/hashrockettil"
+        = link_to "@madebymodetil", "https://twitter.com/madebymodetil"
       %p
         TIL is an open source project.
-        = link_to "visit us on Github", "https://github.com/hashrocket/hr-til"
+        = link_to "visit us on Github", "https://github.com/madebymode/mode-til"
       %p
-        curated in Jacksonville and Chicago
+        curated in Charlotte, NC
         %br/
         by
-        = link_to 'Hashrocket', 'https://hashrocket.com'
+        = link_to 'MODE', 'http://madebymode.com'
