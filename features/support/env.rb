@@ -2,7 +2,7 @@ require 'simplecov'
 require 'cucumber/rails'
 require 'webmock/cucumber'
 
-ENV['permitted_domains'] = 'example.com'
+ENV['permitted_domains'] = 'madebymode.com'
 
 WebMock.disable_net_connect!(allow_localhost: true)
 
