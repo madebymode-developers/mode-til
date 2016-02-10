@@ -16,8 +16,8 @@ If you are creating your own version of the site, fork the repository. Then,
 follow these setup steps:
 
 ```sh
-$ git clone https://github.com/hashrocket/hr-til
-$ cd hr-til
+$ git clone https://github.com/madebymode/mode-til
+$ cd mode-til
 $ bundle install
 $ rake db:setup
 $ cp config/application.yml{.example,}
@@ -29,7 +29,7 @@ Authentication is managed by Omniauth and Google. To whitelist a domain or multi
 ```yml
 # config/application.yml
 
-permitted_domains: 'hashrocket.com|hshrckt.com'
+permitted_domains: 'madebymode.com|modevisual.com'
 ```
 
 With this in place, you can visit '/admin' and log in with an email address from
@@ -41,10 +41,10 @@ The `selenium-webdriver` gem requires the Firefox browser.
 
 ### Hosting
 
-Staging and production for Hashrocket's TIL is located here:
+Development and production for MODE's TIL are located here:
 
-* http://hr-til-staging.herokuapp.com
-* https://til.hashrocket.com
+* http://til-dev.madebymode.com
+* https://til.madebymode.com
 
 ### Environmental Variables
 
