@@ -11,7 +11,7 @@ Rails.application.configure do
   config.assets.raise_runtime_errors = true
 
   config.action_controller.default_url_options = {
-    host: 'localhost:3333',
+    host: 'til.madebymode.com',
     protocol: 'http://'
   }
 
