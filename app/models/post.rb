@@ -1,6 +1,6 @@
 class Post < ActiveRecord::Base
   validates :body, :channel_id, :developer, presence: true
-  validates :title, presence: true, length: { maximum: 50 }
+  validates :title, presence: true, length: { maximum: 100 }
   validates :likes, numericality: { greater_than_or_equal_to: 0 }
   validate :body_size, if: -> { body.present? }
 
@@ -20,7 +20,7 @@ class Post < ActiveRecord::Base
   scope :published_and_ordered, -> { published.order(published_at: :desc) }
   scope :published_and_untweeted, -> { published.where('tweeted is false') }
 
-  MAX_TITLE_CHARS = 50
+  MAX_TITLE_CHARS = 100
   MAX_WORDS = 400
 
   def published?
