@@ -1,5 +1,5 @@
-$primary-typeface: Rosario, $helvetica;
-$secondary-typeface: "Raleway", $helvetica;
+$primary-typeface: Rosario, "Helvetica Neue", Helvetica, sans-serif;
+$secondary-typeface: "Raleway", "Helvetica Neue", Helvetica, sans-serif;
 
 $light: #fcfcf5;
 $dark: #24303c;
@@ -7,6 +7,7 @@ $dark: #24303c;
 $callout: #eaab00;
 $error: #b00b00;
 
+$red: #d84536;
 $blue: #a4deda;
 $blue-dark: darken($blue, 30%);
 
