@@ -13,6 +13,7 @@ class Post < ActiveRecord::Base
   belongs_to :channel
 
   before_create :generate_slug
+  after_update :notify_slack_on_likes_threshold, if: :likes_threshold?
   after_save :notify_slack_on_publication, if: :publishing?
 
   scope :published, -> { where('published_at is not null') }
@@ -40,9 +41,7 @@ class Post < ActiveRecord::Base
   end
 
   def increment_likes
-    self.max_likes += 1 if self.max_likes == self.likes
     self.likes += 1
-    notify_slack_on_likes_threshold if likes_threshold?
     save
   end
 
@@ -75,11 +74,15 @@ class Post < ActiveRecord::Base
   private
 
   def likes_threshold?
-    max_likes % 10 == 0 && max_likes_changed?
+    tens_of_likes? && likes_changed?
   end
 
   def publishing?
     published_at? && published_at_changed?
+  end
+
+  def tens_of_likes?
+    !likes.zero? && likes % 10 == 0
   end
 
   def word_count

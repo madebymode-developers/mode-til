@@ -21,7 +21,7 @@ nav.pagination
     font-style: italic
     font-weight: bold
     font-size: .9em
-    transition: opacity .2s, color .2s
+    +transition(opacity .2s, color .2s)
     opacity: .9
     color: transparentize($blue-dark, .3)
     &:hover
@@ -58,7 +58,7 @@ nav.pagination
       a
         color: inherit
         display: block
-        transition: color .1s
+        +transition(color .1s)
         &:hover
           color: $blue-dark
   footer
@@ -105,11 +105,12 @@ nav.pagination
             border-color: $callout
           &.like
             border-color: transparentize($blue-dark, .5)
-            background: svg-url(heart, $blue) 95% center no-repeat
-            background-size: auto 50%
+            background: image-url("icon_like.png") right center no-repeat
+            background-size: auto 70%
+            +transition(background-image .2s, border-color .2s)
             &:hover,
             &.liked
-              background-image: svg-url(heart, $red)
+              background-image: image-url("icon_like_active.png")
               border-color: #d84536
           &:before
             position: absolute
@@ -119,7 +120,7 @@ nav.pagination
             bottom: 0
             right: 100%
             background: #fff
-            transition: right .1s
+            +transition(right .1s)
             z-index: -1
           &:hover:before
             right: 0
@@ -181,7 +182,7 @@ ul.post_list
         bottom: 0
         right: 100%
         background: #fff
-        transition: right .1s
+        +transition(right .1s)
         z-index: -1
       &:hover:before
         right: 0

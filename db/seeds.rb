@@ -1,22 +1,5 @@
-channels = %w(
-  clojure
-  command-line
-  design
-  devops
-  elixir
-  emberjs
-  git
-  go
-  html-css
-  javascript
-  mobile
-  rails
-  ruby
-  sql
-  testing
-  vim
-  workflow
-)
+channels = %w(vim development design consulting rails ruby testing bash git
+              html-css javascript clojure sql mobile devops go internet elixir emberjs)
 
 channels.each do |channel|
   puts "Finding or creating channel: #{channel}"

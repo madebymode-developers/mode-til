@@ -47,7 +47,7 @@ a.aside_toggle
   +responsive(height, 6rem, 5rem)
   +responsive(line-height, 6rem, 5rem)
   display: block
-  transition: opacity .2s, color .2s
+  +transition(opacity .2s, color .2s)
 
 aside.site_statistics
   position: fixed
@@ -60,11 +60,11 @@ aside.site_statistics
   +mobile
     background: $light
   a.aside_toggle
-    background: svg-url(stats, $blue-dark) center no-repeat
+    background: image-url("icon_statistics.png") center no-repeat
     +hide-text
     background-size: 60% auto
     opacity: .8
-    transition: opacity .2s
+    +transition(opacity .2s)
     &:hover
       opacity: 1
 
@@ -84,44 +84,24 @@ aside.site_about
       background: $light
     &:hover
       color: $blue-dark
-  .site_about__content
-    display: none
+  .copy
     position: absolute
     left: 0
     bottom: 100%
     margin-bottom: 1.5vw
     +shadow
-    padding: 2em
+    padding: 2em 2em 1em 2em
     font-style: italic
     width: 30rem
     background: $light
+    display: none
     font-size: .9em
   &.open
-    .site_about__content
+    .copy
       display: block
-  ul.social
-    li
-      width: 50%
-      float: left
-      box-sizing: border-box
-    a.social_twitter,
-    a.social_github
-      display: block
-      padding-left: 3rem
-      line-height: 3rem
-      background: left center no-repeat
-      background-size: 2.5rem auto
-    a.social_twitter
-      background-image: svg-url(twitter, $blue-dark)
-      &:hover
-        background-image: svg-url(twitter, #55acee)
-    a.social_github
-      background-image: svg-url(github, $blue-dark)
-      &:hover
-        background-image: svg-url(github, #4b4b4b)
   +mobile
-    .site_about__content
-      width: 28rem
+    .copy
+      width: 20rem
 
 aside.site_search
   z-index: 1000
@@ -135,7 +115,7 @@ aside.site_search
     max-width: 0
     overflow: hidden
     white-space: nowrap
-    transition: max-width .3s
+    +transition(max-width .3s)
     +responsive(margin-left, 6rem, 5rem)
   input[type='submit']
     +responsive(margin, 1rem 1rem 1rem 0, .5rem .5rem .5rem 0)
@@ -150,7 +130,7 @@ aside.site_search
     left: 0
     bottom: 0
     top: 0
-    background: svg-url(search, $blue-dark) center no-repeat
+    background: image-url("icon_search.png") center no-repeat
     background-size: 60% auto
     opacity: .7
     &:hover
@@ -164,31 +144,15 @@ footer.site_footer
   clear: both
   font-style: italic
   color: darken($blue-dark, 10%)
+  background: center bottom image-url("logo_footer.png") no-repeat
+  background-size: 2rem 2rem
   padding: 3rem 0
   margin: 3rem 0
   line-height: 1.6
   margin-bottom: 1rem
-  font-size: .8em
-  p
-    margin: 1rem 0
-  .site_footer_social
-    a
-      display: inline-block
-      +hide_text
-      width: 5rem
-      height: 2.5rem
-      opacity: .8
-      transition: opacity .2s
-      background: center no-repeat
-      background-size: auto 100%
-      &:hover
-        opacity: 1
-      &.footer_hashrocket
-        background-image: image-url("logo_footer.png")
-      &.footer_twitter
-        background-image: svg-url(twitter, $blue-dark)
-      &.footer_github
-        background-image: svg-url(github, $blue-dark)
+  p:last-child
+    margin-top: 2rem
+    font-size: .8em
 
 main
   min-height: 60vh
