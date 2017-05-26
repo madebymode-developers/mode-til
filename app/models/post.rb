@@ -1,7 +1,8 @@
-class Post < ActiveRecord::Base
+class Post < ApplicationRecord
   validates :body, :channel_id, :developer, presence: true
   validates :title, presence: true, length: { maximum: 100 }
   validates :likes, numericality: { greater_than_or_equal_to: 0 }
+  validates :slug, uniqueness: true
   validate :body_size, if: -> { body.present? }
 
   delegate :name, to: :channel, prefix: true
@@ -13,13 +14,12 @@ class Post < ActiveRecord::Base
   belongs_to :channel
 
   before_create :generate_slug
-  after_update :notify_slack_on_likes_threshold, if: :likes_threshold?
   after_save :notify_slack_on_publication, if: :publishing?
 
-  scope :published, -> { where('published_at is not null') }
   scope :drafts, -> { where('published_at is null') }
+  scope :popular, -> { published.where('likes >= 5') }
+  scope :published, -> { where('published_at is not null') }
   scope :published_and_ordered, -> { published.order(published_at: :desc) }
-  scope :published_and_untweeted, -> { published.where('tweeted is false') }
 
   MAX_TITLE_CHARS = 100
   MAX_WORDS = 400
@@ -41,7 +41,9 @@ class Post < ActiveRecord::Base
   end
 
   def increment_likes
+    self.max_likes += 1 if self.max_likes == self.likes
     self.likes += 1
+    notify_slack_on_likes_threshold if likes_threshold?
     save
   end
 
@@ -74,15 +76,11 @@ class Post < ActiveRecord::Base
   private
 
   def likes_threshold?
-    tens_of_likes? && likes_changed?
+    max_likes % 10 == 0 && max_likes_changed?
   end
 
   def publishing?
     published_at? && published_at_changed?
-  end
-
-  def tens_of_likes?
-    !likes.zero? && likes % 10 == 0
   end
 
   def word_count
@@ -94,7 +92,7 @@ class Post < ActiveRecord::Base
   end
 
   def body_size
-    return true if word_count < MAX_WORDS
+    return if word_count <= MAX_WORDS
 
     words_remaining_abs = words_remaining.abs
     errors.add :body, "of this post is too long. It is "\
@@ -103,15 +101,15 @@ class Post < ActiveRecord::Base
   end
 
   def generate_slug
-    self.slug = SecureRandom.hex(5)
+    self[:slug] ||= SecureRandom.hex(5)
   end
 
   def slugified_title
-    title.downcase.strip.gsub(/[^A-Za-z0-9\s]/, '').gsub(/(\s|-)+/, '-')
+    title.downcase.gsub(/[^A-Za-z0-9\s-]/, '').strip.gsub(/(\s|-)+/, '-')
   end
 
   def notify_slack(event)
-    SlackNotifier.new.async.perform(self, event)
+    SlackNotifier.new.perform(self, event)
   end
 
   def self.search(query)

@@ -41,11 +41,6 @@ Then 'I see statistics' do
     expect(page).to have_selector 'li', count: 30
   end
 
-  within '#top-ten' do
-    expect(page).to have_link 'li', count: 10
-    expect(page).to have_content 'Web Development', count: 10
-  end
-
   within '#channels' do
     expect(page).to have_link 'a', count: 35
     expect(page).to have_content 'phantomjs', count: 35
@@ -130,8 +125,8 @@ Then(/^I see a message "(.*?)"$/) do |message|
   expect(page).to have_content message
 end
 
-Then 'I see the footer information' do
-  within 'footer' do
+Then 'I see the company branding' do
+  within '.site_head' do
     expect(page).to have_link 'Hashrocket', href: 'https://hashrocket.com'
   end
 end
@@ -169,4 +164,8 @@ end
 
 And "I don't see a search header" do
   expect(page).to_not have_selector ".page_head"
+end
+
+Given(/^I try to visit "([^"]*)"$/) do |url|
+  visit url
 end

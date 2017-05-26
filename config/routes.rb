@@ -1,10 +1,23 @@
 Rails.application.routes.draw do
-  get 'ui(/:action)', controller: 'ui' unless Rails.env.production?
+  default_url_options host: ENV.fetch('host'), protocol: ENV.fetch('protocol')
+
+  unless Rails.env.production?
+    namespace 'ui' do
+      get '/', action: 'index'
+      %w(author_index drafts home post_edit post_show statistics tag_index).each do |action|
+        get action, action: action
+      end
+    end
+  end
 
   root to: 'posts#index'
 
+  # Bot redirects
+  get 'wp-login.php' => redirect('/')
+  get 'authors/wp-login.php' => redirect('/')
+
   resource :profile, controller: 'developers', only: %i(update edit)
-  resources :developers, path: '/author', only: 'show'
+  resources :developers, path: '/authors', only: 'show'
 
   resources :posts, except: :destroy, param: :titled_slug
   resources :statistics, only: :index

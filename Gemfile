@@ -1,41 +1,44 @@
 source 'https://rubygems.org'
 
-ruby '2.3.0'
+ruby '2.3.3'
 
-gem 'rails', '4.2.5'
+gem 'rails', '~> 5.x'
 
 gem 'active_model_serializers'
+gem 'airbrake'
 gem 'authem'
 gem 'autoprefixer-rails'
-gem 'bourbon'
 gem 'coffee-rails', '~> 4.1.0'
 gem 'dynamic_form'
 gem 'haml-rails'
 gem 'httparty'
 gem 'jbuilder', '~> 2.0'
 gem 'jquery-rails'
+gem 'kaminari'
 gem 'omniauth-google-oauth2'
 gem 'pg'
 gem 'puma'
+gem 'rack-cors', require: 'rack/cors'
 gem 'redcarpet'
 gem 'rouge'
 gem 'sass-rails', '~> 5.0'
-gem 'sucker_punch', '~> 1.0'
-gem 'uglifier', '>= 1.3.0'
-gem 'kaminari'
+gem 'scenic', '~> 1.3'
+gem 'sucker_punch', '~> 2.0'
 gem 'twitter'
-gem 'scenic', '~> 1.0'
+gem 'uglifier', '>= 1.3.0'
 
 group :development do
   gem 'brakeman', require: false
   gem 'bullet'
   gem 'phil'
+  gem 'spring'
 end
 
 group :development, :test do
   gem 'factory_girl_rails'
   gem 'figaro'
   gem 'pry-rails'
+  gem 'pry-byebug'
   gem 'rspec-rails'
 end
 
@@ -44,10 +47,13 @@ group :production do
 end
 
 group :test do
+  gem 'capybara-webmock'
   gem 'cucumber-rails', require: false
   gem 'database_cleaner'
+  gem 'flatware-cucumber', require: false
+  gem 'flatware-rspec', require: false
   gem 'launchy'
-  gem 'simplecov', require: false
-  gem 'webmock'
+  gem 'rails-controller-testing'
   gem 'selenium-webdriver'
+  gem 'webmock'
 end

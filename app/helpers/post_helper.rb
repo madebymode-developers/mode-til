@@ -24,11 +24,22 @@ module PostHelper
   def tweet_link(post)
     title = post.title
     handle = post.twitter_handle
-    channel = post.channel_name
-    url = Rails.configuration.server_url + post_path(post)
+    channel = post.channel
 
-    content_tag(:a, 'Tweet', href: 'http://twitter.com/share', class: 'twitter-share-button',
-                             'data-text': "Today I learned: #{title}", 'data-via': "#{handle}",
-                             'data-hashtags': "#{channel}", 'data-url': "#{url}")
+    url = post_url(post)
+
+    content_tag(:a,
+      'Tweet',
+      href: 'http://twitter.com/share',
+      class: 'twitter-share-button',
+      'data-text': "Today I learned: #{title}",
+      'data-via': "#{handle}",
+      'data-hashtags': "#{channel.twitter_hashtag}",
+      'data-url': "#{url}"
+    )
+  end
+
+  def display_more_info?(post, dynamic_path)
+    post.published? && lookup_context.find_all(dynamic_path, [], true).any?
   end
 end

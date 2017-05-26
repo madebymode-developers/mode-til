@@ -1,19 +1,18 @@
 development: &default
-  host: 'http://localhost:3333'
+  default_twitter_handle: 'madebymode'
   google_client_id:
   google_client_secret:
+  heroku_production_app_name:
+  host: 'til.madebymode.com'
+  protocol: 'http://'
+  permitted_domains: 'madebymode.com|modevisual.com'
+  permitted_emails: 'johnsmith@whitelisted-guest.com'
   slack_post_endpoint:
-  update_twitter_with_post: "false"
-  twitter_consumer_key:
-  twitter_consumer_secret:
   twitter_access_token:
   twitter_access_token_secret:
-  heroku_production_app_name:
-  permitted_domains: 'madebymode.com|modevisual.com'
-  default_twitter_handle: 'madebymode'
+  twitter_consumer_key:
+  twitter_consumer_secret:
+  update_twitter_with_post: "false"
 
 test:
   <<: *default
-  host: 'http://localhost:3333'
-  slack_post_endpoint:
-  update_twitter_with_post: "false"

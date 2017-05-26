@@ -37,42 +37,77 @@ describe Post do
     expect(post).to_not be_valid
   end
 
-  it 'should create a slug' do
-    expect(post.slug).to be
+  describe '#generate_slug' do
+    it 'should create a slug' do
+      expect(post.slug).to be
+    end
+
+    it 'should allow a custom slug' do
+      custom_slugged_post = FactoryGirl.create(:post, slug: '1234')
+      expect(custom_slugged_post.slug).to eq '1234'
+    end
   end
 
-  it 'should create a slug with dashes' do
-    post.title = 'Today I learned about clojure'
-    expect(post.send(:slugified_title)).to eq valid_title
+  describe '#slugified_title' do
+    it 'should create a slug with dashes' do
+      post.title = 'Today I learned about clojure'
+      expect(post.send(:slugified_title)).to eq valid_title
+    end
+
+    it 'should create a slug without multiple dashes' do
+      post.title = 'Today I learned --- about clojure'
+      expect(post.send(:slugified_title)).to eq valid_title
+    end
+
+    it 'should use title dashes in slug' do
+      post.title = 'Today I learned about clojure-like syntax feature'
+      expect(post.send(:slugified_title)).to eq 'today-i-learned-about-clojure-like-syntax-feature'
+    end
+
+    it 'should remove whitespace from slug' do
+      post.title = '  Today I             learned about clojure   '
+      expect(post.send(:slugified_title)).to eq valid_title
+    end
+
+    it 'should not allow punctuation in slug' do
+      post.title = 'Today I! learned? & $ % about #clojure'
+      expect(post.send(:slugified_title)).to eq valid_title
+    end
+
+    it 'should ignore and strip emojis' do
+      post.title = 'Today I learned about clojure 😀'
+      expect(post.send(:slugified_title)).to eq valid_title
+    end
   end
 
-  it 'should create a slug without multiple dashes' do
-    post.title = 'Today I learned --- about clojure'
-    expect(post.send(:slugified_title)).to eq valid_title
-  end
+  describe '#body_size' do
+    it 'should return true when the post is equal or below 200 words' do
+      post.body = 'word ' * 200
+      expect(post).to be_valid
+    end
 
-  it 'should remove whitespace from slug' do
-    post.title = '  Today I             learned about clojure   '
-    expect(post.send(:slugified_title)).to eq valid_title
-  end
+    it 'should return false when the post is above 200 words' do
+      post.body = 'word ' * 201
+      expect(post).to_not be_valid
+      expect(post.errors.messages[:body]).to eq ['of this post is too long. It is 1 word over the limit of 200 words']
+    end
 
-  it 'should not allow punctuation in slug' do
-    post.title = 'Today I! learned? & $ % about #clojure'
-    expect(post.send(:slugified_title)).to eq valid_title
-  end
+    it 'should behave like a validation and return an appropriate messsage' do
+      post.body = 'word ' * 200
+      expect(post).to be_valid
 
-  it 'should not allow a body longer than 200 words' do
-    post.body = 'word ' * 201
-    expect(post).to_not be_valid
-    expect(post.errors.messages[:body]).to eq ['of this post is too long. It is 1 word over the limit of 200 words']
+      post.body = 'word ' * 201
+      expect(post).to_not be_valid
+      expect(post.errors.messages[:body]).to eq ['of this post is too long. It is 1 word over the limit of 200 words']
 
-    post.body = 'word ' * 300
-    expect(post).to_not be_valid
-    expect(post.errors.messages[:body]).to eq ['of this post is too long. It is 100 words over the limit of 200 words']
+      post.body = 'word ' * 300
+      expect(post).to_not be_valid
+      expect(post.errors.messages[:body]).to eq ['of this post is too long. It is 100 words over the limit of 200 words']
 
-    post.body = 'word ' * 400
-    expect(post).to_not be_valid
-    expect(post.errors.messages[:body]).to eq ['of this post is too long. It is 200 words over the limit of 200 words']
+      post.body = 'word ' * 400
+      expect(post).to_not be_valid
+      expect(post.errors.messages[:body]).to eq ['of this post is too long. It is 200 words over the limit of 200 words']
+    end
   end
 
   context 'it should count its words' do
@@ -114,7 +149,7 @@ describe Post do
     end
   end
 
-  describe '.search' do
+  describe '#search' do
     it 'finds by developer' do
       needle = %w(brian jake).map do |author_name|
         FactoryGirl.create :post, developer: FactoryGirl.create(:developer, username: author_name)
@@ -168,16 +203,13 @@ describe Post do
     end
   end
 
-  it 'knows if its likes count is a factor of ten, ignoring zeroes' do
-    method = :tens_of_likes?
+  it 'knows if its max likes count is a factor of ten' do
+    method = :likes_threshold?
 
-    post.likes = 10
+    post.max_likes = 10
     expect(post.send(method)).to eq true
 
-    post.likes = 11
-    expect(post.send(method)).to eq false
-
-    post.likes = 0
+    post.max_likes = 11
     expect(post.send(method)).to eq false
   end
 
@@ -187,21 +219,20 @@ describe Post do
     expect(post).to_not be_valid
   end
 
-  context 'publish drafts' do
-    describe '.published' do
-      it 'cannot create more than one draft per developer' do
-        post = FactoryGirl.create(:post, :draft)
-        expect do
-          Post.create(post.attributes)
-        end.to raise_error(ActiveRecord::RecordNotUnique)
-      end
+  describe '#publish' do
+    it 'sets the post to published = true' do
+      post.publish
+      expect(post.published_at).to be
     end
+  end
 
-    describe '#publish' do
-      it 'sets the post to published = true' do
-        post.publish
-        expect(post.published_at).to be
-      end
+  describe '.popular' do
+    it 'returns published posts with five or more likes' do
+      FactoryGirl.create(:post, likes: 5)
+      FactoryGirl.create(:post, :draft, likes: 5)
+      FactoryGirl.create(:post, likes: 4)
+
+      expect(described_class.popular.size).to eq 1
     end
   end
 
@@ -231,6 +262,50 @@ describe Post do
 
         expect(post).to receive(:notify_slack)
         post.save
+      end
+    end
+  end
+
+  describe '#increment_likes' do
+    it 'increments max likes when likes equals max likes' do
+      post = FactoryGirl.create(:post, likes: 5, max_likes: 5)
+
+      post.increment_likes
+      expect(post.likes).to eq 6
+      expect(post.max_likes).to eq 6
+    end
+
+    it 'does not change max likes when likes are less than max likes' do
+      post = FactoryGirl.create(:post, likes: 3, max_likes: 5)
+
+      post.increment_likes
+      expect(post.likes).to eq 4
+      expect(post.max_likes).to eq 5
+    end
+  end
+
+  describe '#decrement_likes' do
+    it 'does not change max likes' do
+      post = FactoryGirl.create(:post, likes: 5, max_likes: 5)
+
+      post.decrement_likes
+      expect(post.likes).to eq 4
+      expect(post.max_likes).to eq 5
+    end
+  end
+
+  context 'slack integration on tens of likes' do
+    describe 'reaches the milestone more than once' do
+      it 'should notify slack only once' do
+        post = FactoryGirl.create(:post, likes: 9, max_likes: 9)
+
+        expect(post).to receive(:notify_slack).once
+        post.increment_likes # 10
+        post.decrement_likes # 9
+        post.increment_likes # 10
+
+        post.increment_likes # 11
+        post.decrement_likes # 10
       end
     end
   end

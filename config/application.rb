@@ -1,4 +1,4 @@
-require File.expand_path('../boot', __FILE__)
+require_relative 'boot'
 
 require 'rails/all'
 
@@ -6,10 +6,16 @@ Bundler.require(*Rails.groups)
 
 module HrTil
   class Application < Rails::Application
-    config.autoload_paths << Rails.root.join('lib', 'app/decorators')
+    config.active_record.schema_format = :sql
+    config.autoload_paths << Rails.root.join('lib')
     config.time_zone = 'Eastern Time (US & Canada)'
 
-    # Do not swallow errors in after_commit/after_rollback callbacks.
-    config.active_record.raise_in_transactional_callbacks = true
+
+    config.middleware.insert_before 0, Rack::Cors do
+      allow do
+        origins '*'
+        resource '*', :headers => :any, :methods => [:get, :options]
+      end
+    end
   end
 end

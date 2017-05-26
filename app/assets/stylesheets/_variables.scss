@@ -1,26 +1,30 @@
-$primary-typeface: Rosario, $helvetica;
-$secondary-typeface: "Raleway", $helvetica;
+$primary-typeface: "Lora", "Helvetica Neue", Helvetica, sans-serif;
+$secondary-typeface: "Raleway", "Helvetica Neue", Helvetica, sans-serif;
+$news-typeface: "Limelight", sans-serif;
 
-$light: #fcfcf5;
-$dark: #24303c;
+$light: #d5e9f5;
+$med: #92c4d1;
+$dark: #414347;
 
-$callout: #eaab00;
-$error: #b00b00;
+$navy: #082736;
+$red: #ae1f23;
+$cyan: #33d6ea;
+$pink: #ee7567;
+$green: #10ca97;
+$blue: #67acdb;
 
-$blue: #a4deda;
-$blue-dark: darken($blue, 30%);
+$twitter-color: #55acee;
+$github-color: #4b4b4b;
 
-$langs: (
-  "assembly": "#6E4C13",
-  "bash": "#89e051",
-  "clojure": "#db5855",
-  "coffeescript": "#244776",
-  "css": "#563d7c",
-  "elixir": "#701516",
-  "go": "#375eab",
-  "html": "#e44b23",
-  "javascript": "#f1e05a",
-  "ruby": "#701516",
-  "vim": "#199f4b",
-  "emberjs": "#e1563f"
-);
+$base: $dark;
+$bg: $light;
+$accent: $navy;
+$error: $red;
+
+$colors: (
+  #5cc3ff,
+  #ff6d40,
+  #5dde90,
+  #f2d56d,
+  #f29de4
+)

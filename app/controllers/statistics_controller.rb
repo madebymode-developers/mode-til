@@ -1,11 +1,26 @@
 class StatisticsController < ApplicationController
-  helper_method :top_ten, :authors, :channels,
-    :highest_count_last_30_days, :posts_per_day, :posts
+  helper_method :authors,
+    :channels,
+    :highest_count_last_30_days,
+    :hot_posts,
+    :posts,
+    :posts_per_day,
+    :top_ten
 
   private
 
+  CountStat = Struct.new(:label, :count)
+
   def posts
     Post.published
+  end
+
+  def hot_posts
+    hot_posts = ActiveRecord::Base.connection.execute('select id from hot_posts limit 10;')
+
+    hot_posts.map do |hot_post|
+      Post.find(hot_post['id'])
+    end
   end
 
   def top_ten
@@ -13,30 +28,33 @@ class StatisticsController < ApplicationController
   end
 
   def authors
-    Developer.joins(:posts)
+    @authors ||= Developer.joins(:posts)
       .merge(Post.published)
-      .uniq
-      .sort_by(&:posts_count)
-      .reverse
+      .group(:username)
+      .order('count_all desc')
+      .count.map {|row| CountStat.new(row[0], row[1]) }
   end
 
   def channels
-    Channel.joins(:posts)
+    @channels ||= Channel.joins(:posts)
       .merge(Post.published)
-      .uniq
-      .sort_by(&:posts_count)
-      .reverse
+      .group(:name, :channel_id)
+      .order('count_all desc')
+      .count.map {|row| CountStat.new(row[0][0], row[1]) }
   end
 
   def highest_count_last_30_days
     posts_per_day.map(&:count).max + 1
   end
 
-  DayStat = Struct.new(:date, :count)
   def posts_per_day
+    @posts_per_day ||= find_posts_per_day
+  end
+
+  def find_posts_per_day
     sql = <<-SQL
       with posts as (
-           select date((created_at at time zone 'UTC' at time zone 'America/New_York')::timestamptz) as post_date
+           select date((published_at at time zone 'America/New_York')::timestamptz) as post_date
               from posts
               where published_at is not null
       )
@@ -49,11 +67,9 @@ class StatisticsController < ApplicationController
       order by dates_table.date;
     SQL
 
-    ppd = []
     posts = ActiveRecord::Base.connection.execute(sql)
-    posts.values.each do |day|
-      ppd << DayStat.new(day[0].to_date.strftime("%a, %b %e"), day[1].to_i)
+    posts.values.map do |day|
+      CountStat.new(day[0].to_date.strftime("%a, %b %-e"), day[1].to_i)
     end
-    ppd
   end
 end

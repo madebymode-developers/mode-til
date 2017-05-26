@@ -45,6 +45,10 @@ And 'I have a post' do
   @post = FactoryGirl.create(:post, developer: @developer)
 end
 
+And 'I have a draft post' do
+  FactoryGirl.create(:post, :draft, developer: @developer)
+end
+
 And 'I have a post with markdown' do
   FactoryGirl.create(:post, developer: @developer, body: '*emphasis*')
 end
@@ -82,6 +86,17 @@ end
 
 When 'I click edit' do
   within '.post' do
-    click_on 'edit this post'
+    click_on 'edit'
   end
+end
+
+Given 'I try to sign up with a white-listed guest email address' do
+  OmniAuth.config.add_mock(:google_oauth2, info: { name: 'John Smith', email: 'johnsmith@whitelisted-guest.com' })
+  visit google_oauth2_path
+end
+
+And 'a guest user is created' do
+  expect(@developer).to be
+  expect(@developer.email).to eq 'johnsmith@whitelisted-guest.com'
+  expect(@developer.username).to eq 'johnsmith'
 end

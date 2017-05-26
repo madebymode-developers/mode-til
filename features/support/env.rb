@@ -1,8 +1,5 @@
-require 'simplecov'
 require 'cucumber/rails'
 require 'webmock/cucumber'
-
-ENV['permitted_domains'] = 'madebymode.com'
 
 WebMock.disable_net_connect!(allow_localhost: true)
 
@@ -17,3 +14,10 @@ rescue NameError
 end
 
 Cucumber::Rails::Database.javascript_strategy = :truncation
+
+Capybara.javascript_driver = :capybara_webmock_chrome
+Capybara::Webmock.start
+
+at_exit do
+  Capybara::Webmock.stop
+end

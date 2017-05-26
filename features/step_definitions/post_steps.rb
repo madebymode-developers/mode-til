@@ -1,7 +1,11 @@
 include ActionView::Helpers::TextHelper
 
+When 'I dismiss the flash message' do
+  find('#flash p').click
+end
+
 When 'I click create post' do
-  within '.site_nav' do
+  within '.admin_panel' do
     click_on 'Create Post'
   end
 end
@@ -16,6 +20,10 @@ Given 'a channel exists' do
   @channel = FactoryGirl.create(:channel)
 end
 
+Given 'a channel with a more info partial' do
+  @channel = FactoryGirl.create(:ruby_channel)
+end
+
 Given 'a post exists' do
   @post = FactoryGirl.create(:post)
 end
@@ -24,12 +32,24 @@ Given 'a post exists with a punctuated title' do
   @post = FactoryGirl.create(:post, :with_punctuated_title)
 end
 
+Given 'a draft post exists in the ruby channel' do
+  @post = FactoryGirl.create(:post, :draft, channel: FactoryGirl.create(:ruby_channel))
+end
+
+Given 'a post exists in the ruby channel' do
+  @post = FactoryGirl.create(:post, channel: FactoryGirl.create(:ruby_channel))
+end
+
 Given 'a post exists with 10 likes' do
   @post = FactoryGirl.create(:post, likes: 10)
 end
 
 Given 'a post exists by another developer' do
   @others_post = FactoryGirl.create(:post)
+end
+
+Given(/^(\d+) drafts* exists* by another developer$/) do |num|
+  FactoryGirl.create_list(:post, num.to_i, :draft)
 end
 
 When 'I visit the edit page for that post' do
@@ -58,7 +78,7 @@ end
 
 When 'I enter information with markdown fenced code into that form' do
   fill_in 'Title', with: 'Fenced'
-  markdown_content = "```first line\nsecond line\nthird line\n```"
+  markdown_content = "```javascript\nfirst line\nsecond line\nthird line\n```"
   fill_in 'Body', with: markdown_content
 end
 
@@ -66,6 +86,10 @@ When 'I enter information with markdown bullets into that form' do
   fill_in 'Title', with: 'Bulletized'
   markdown_content = '* item from a list of items'
   fill_in 'Body', with: markdown_content
+end
+
+And 'I see the fenced code labeled accurately' do
+  expect(page).to have_selector "[data-language='javascript']"
 end
 
 And 'I select a channel' do
@@ -88,8 +112,8 @@ And 'I click raw' do
   click_on 'view raw'
 end
 
-When 'I click on my username in the upper right' do
-  within '.site_nav' do
+When 'I click on my username in the admin panel' do
+  within '.admin_panel' do
     click_on @developer.username
   end
 end
@@ -102,8 +126,8 @@ Then 'I see the post I created' do
 end
 
 Then(/^I see the likes count equals (\d+)$/) do |num|
-  within '.post' do
-    expect(page).to have_content "liked #{num} time"
+  within '.post__like-count' do
+    expect(page).to have_content num
   end
 end
 
@@ -126,7 +150,7 @@ Then 'I see the markdown fenced code I created' do
 end
 
 Then 'I see the markdown bullets I created' do
-  within '.post section li' do
+  within '.post__content li' do
     expect(page).to have_content 'item from a list of items'
   end
 end
@@ -188,16 +212,10 @@ When 'I go to the most recent post' do
   visit post_path @newest_post
 end
 
-When 'I see only a left arrow' do
-  within 'footer nav' do
+When 'I see only a previous TIL link' do
+  within '.pagination' do
     expect(page).to have_link 'previous TIL'
     expect(page).to_not have_link 'next TIL'
-  end
-end
-
-When 'I click the left arrow' do
-  within 'footer nav' do
-    click_on 'previous TIL'
   end
 end
 
@@ -205,8 +223,8 @@ Then 'I see the second most recent post' do
   expect(current_path).to eq(post_path(@older_post))
 end
 
-And 'I see a right arrow and a left arrow' do
-  within 'footer nav' do
+And 'I see a next TIL link and a previous TIL link' do
+  within '.pagination' do
     expect(page).to have_link 'next TIL'
     expect(page).to have_link 'previous TIL'
   end
@@ -216,16 +234,10 @@ Then 'I see the least recent post' do
   expect(current_path).to eq(post_path(@oldest_post))
 end
 
-When 'I see only a right arrow' do
-  within 'footer nav' do
+When 'I see only a next TIL link' do
+  within '.pagination' do
     expect(page).to have_link 'next TIL'
     expect(page).to_not have_link 'previous TIL'
-  end
-end
-
-When 'I click the right arrow' do
-  within 'footer nav' do
-    click_on 'next TIL'
   end
 end
 
@@ -295,6 +307,11 @@ When 'I enter a long body into that form' do
   fill_in 'Body', with: long_body
 end
 
+Given 'I visit the author page of an author with a Twitter handle' do
+  developer = FactoryGirl.create(:developer, twitter_handle: 'sqlfan')
+  visit developer_path(developer)
+end
+
 Given 'posts exist for a given author' do
   developer = FactoryGirl.create(:developer, username: 'prolificposter')
   FactoryGirl.create(:post, :for_last_week, developer: developer)
@@ -312,12 +329,12 @@ When "I visit that author's posts page" do
   visit developer_path @developer
 end
 
-When "I visit the url 'http://domain/author/username'" do
-  visit 'author/prolificposter'
+When "I visit the url 'http://domain/authors/username'" do
+  visit 'authors/prolificposter'
 end
 
 When "I click that author's username" do
-  within '.post:first-child aside' do
+  within '.post:first-child footer' do
     click_on 'prolificposter'
   end
 end
@@ -364,8 +381,19 @@ Then 'I see the show page for that post' do
     expect(page).to have_content @post.title
     expect(page).to have_content @post.developer_username
     expect(page).to have_content 'Today I learned about web development'
-    expect(page).to have_content '#phantomjs'
+    expect(page.body).to match(/#phantomjs/i)
   end
+end
+
+Then 'I see the more info partial on the show page' do
+  within '.more-info' do
+    expect(page).to have_content 'working with Ruby applications'
+  end
+end
+
+Then 'I do not see the more info partial on the show page' do
+  expect(page).to_not have_selector '.more-info'
+  expect(page).to_not have_content 'working with Ruby applications'
 end
 
 When 'I visit the show page for that post' do
@@ -376,10 +404,18 @@ Then 'I see the sanitized title' do
   expect(page).to have_title "It's Friday & Stuff"
 end
 
-And 'I see a unique CSS selector for that channel' do
-  within '.post' do
-    expect(page).to have_selector '.phantomjs'
-  end
+Then 'I see the sanitized script' do
+  expect(page).to have_content "alert('XSS')"
+  expect(page).not_to have_selector :css, 'script', visible: false, text: "alert('XSS')"
+end
+
+Then 'I see the sanitized link' do
+  expect(page).to have_selector 'a', text: 'Click here'
+  expect(find_link('Click here')[:onclick]).not_to eq 'javascript:alert("XSS")'
+end
+
+Then 'I see the canonical link for this post' do
+  expect(page.find('head link[rel=canonical]', visible: false)['href']).to include(@post.slug)
 end
 
 Then 'I see the show page for that edited post' do
@@ -420,6 +456,13 @@ end
 And 'I see a markdown preview of my post' do
   within('.post .content_preview em') do
     expect(page).to have_content 'emphasis'
+  end
+end
+
+Then 'I see a markdown preview with my fenced code' do
+  within('.post .content_preview') do
+    expect(page).to_not have_content '```javascript'
+    expect(page).to have_content 'first line'
   end
 end
 
@@ -528,11 +571,11 @@ When(/^I click (the )?"(.*?)"( button)?$/) do |_, text, is_button|
 end
 
 Then 'I should see the About Us text' do
-  expect(page).to have_selector '.site_about', visible: true
+  expect(page).to have_selector '.site_nav__about .site_nav__toggle', visible: true
 end
 
 Then 'I should not see the About Us text' do
-  expect(page).to have_selector '.site_about', visible: false
+  expect(page).to have_selector '.site_nav__about .site_nav__toggle', visible: false
 end
 
 Given(/^I have an existing unpublished post$/) do
@@ -561,7 +604,7 @@ Then 'I see the draft' do
   within '.post' do
     expect(page).to have_content 'johnsmith'
     expect(page).to have_content 'Today I learned about web development'
-    expect(page).to have_content 'Draft Post'
+    expect(page).to have_content 'draft'
     expect(page).to_not have_content 'previous TIL'
     expect(page).to_not have_content 'next TIL'
   end
@@ -569,4 +612,26 @@ Then 'I see the draft' do
   within '.post:first-child aside' do
     expect(page).to_not have_content 'like'
   end
+end
+
+Then 'I see the twitter share button' do
+  within 'article.post' do
+    expect(page).to have_selector('.post__social')
+  end
+end
+
+Then 'I do not see the twitter share button' do
+  within 'article.post' do
+    expect(page).to_not have_selector('.post__social')
+  end
+end
+
+Then 'I see the author\'s Twitter link' do
+  within 'header.page_head' do
+    expect(page).to have_link '@sqlfan', href: 'https://twitter.com/sqlfan'
+  end
+end
+
+Then(/^I see (\d+) posts*$/) do |num|
+  expect(page).to have_selector 'article', count: num.to_i
 end

@@ -24,13 +24,20 @@ class PostsController < ApplicationController
 
   def index
     @posts = posts_with_developer_and_channel.published_and_ordered.search(params[:q])
+
+    respond_to do |format|
+      format.html
+      format.json { render json: @posts }
+      format.atom
+    end
   end
 
   def show
     if valid_url?
       respond_to do |format|
-        format.md { render text: @post.body }
         format.html
+        format.md { response.headers["X-Robots-Tag"] = "noindex" }
+        format.json { render json: @post }
       end
     else
       redirect_to_valid_slug
@@ -110,7 +117,7 @@ class PostsController < ApplicationController
   end
 
   def post_params
-    params.require(:post).permit :body, :channel_id, :developer_id, :title, :slug
+    params.require(:post).permit :body, :channel_id, :title
   end
 
   def untitled_slug
