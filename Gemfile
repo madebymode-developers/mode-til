@@ -28,6 +28,7 @@ gem 'twitter'
 gem 'uglifier', '>= 1.3.0'
 
 group :development do
+  gem 'dotenv-rails'
   gem 'brakeman', require: false
   gem 'bullet'
   gem 'phil'
