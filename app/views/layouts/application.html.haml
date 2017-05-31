@@ -17,7 +17,8 @@
         %h1= link_to SITE_NAME, root_path
         %h2
           = link_to "A Hashrocket ", "https://hashrocket.com", class: "hr"
-          = link_to "& madebymode", "https://madebymode.com"
+          %span
+            = link_to "& madebymode project", "https://madebymode.com"
 
     = render 'shared/flash'
 
