@@ -33,6 +33,8 @@ class PostsController < ApplicationController
   end
 
   def show
+    Mime::Type.register "text/html", :md
+
     if valid_url?
       respond_to do |format|
         format.html
